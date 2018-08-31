@@ -1,5 +1,3 @@
-*004 pick paper patent pair using degree of author overlap
-*002 
 
 global wosdir "../../bigdata/wos/dta/"
 global andreadir "Simultaneous Discoveries (1)/Andrea/"
