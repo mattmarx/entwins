@@ -1,6 +1,3 @@
-*003 implement other bikard criteria
-*002 move dirs. sort by year to get twin cohorts within paper/context
-
 global sourcedatadir "E:/Dropbox (BOSTON UNIVERSITY)/bigdata/mag/dta/"
 //global sourcedatadir ../../../bigdata/mag/dta/
 
