@@ -15,9 +15,9 @@ merge m:1 magid using "$sourcedatadir/magpapersmissingauthornames", keep(1) noge
 rename magid citedmagid
 
 * now get rid of papers not cited at least 5x
-//rename citedpaperid paperid
-//merge m:1 paperid using $sourcedatadir/magcited5x, keep(3) nogen
-//rename paperid citedpaperid
+rename citedpaperid paperid
+merge m:1 paperid using $sourcedatadir/magcited5x, keep(3) nogen
+rename paperid citedpaperid
 
 * get years next so we can place them into possible cohorts
 rename citedmagid magid
