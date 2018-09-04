@@ -1,9 +1,9 @@
 
-global wosdir "../../bigdata/wos/dta/"
+global wosdir "../../../bigdata/wos/dta/"
 global andreadir "Simultaneous Discoveries (1)/Andrea/"
-global fung "../../bigdata/patents/fung/"
-global pv "../../bigdata/patents/patentsview/"
-global vcpat "../../bigdata/patents/ewensvcpat/"
+global fung "../../../bigdata/patents/fung/"
+global pv "../../../bigdata/patents/patentsview/"
+global vcpat "../../../bigdata/patents/ewensvcpat/"
 global fromscratch (0)
 *** start by classifying all of the potential twins
 *** this is wasted work in part becase not all of these are actual twins
@@ -29,7 +29,7 @@ rename wosidcited2 wosid
 append using temp1
 erase temp1.dta
 duplicates drop
-save data/candidatetwinpairs, replace
+save candidatetwinpairs, replace
 
 
 *  individual papers and their characteristics, no twin info
@@ -62,7 +62,7 @@ duplicates drop
 drop if missing(wosid)
 merge 1:1 wosid using $wosdir/wospaperpatcitesorgloc, keep(3) nogen
 merge 1:1 wosid using $wosdir/wosprestige, keep(3) nogen
-save data/candidatetwinpaperdetails, replace
+save candidatetwinpaperdetails, replace
 
 //join, into(data/candidatetwinpairs) by(wosid) keep(3) nogen
 
@@ -71,7 +71,7 @@ save data/candidatetwinpaperdetails, replace
 * are any of these candidate twins cited by patents? industry patents?
 *if so, is there an author match??
 *if so, does the patent belong to a VC-backed startup? a Crunchbase company?
-use data/candidatetwinpaperdetails, clear
+use candidatetwinpaperdetails, clear
 drop title year
 rename wosid citedwosid
 split authors, generate(author) parse(";")
@@ -99,7 +99,7 @@ preserve
  keep wosid patentvcbacked
  fcollapse (sum) patentvcbacked, by(wosid)
  rename patentvcbacked citesfromvcbackedpatents
- save data/candidatetwincitedbyvcpatent, replace 
+ save candidatetwincitedbyvcpatent, replace 
 }
 restore
 rename patent patnum
@@ -173,10 +173,10 @@ keep if samename==1
 gen samenamevcpatent = samename==1 & patentvcbacked
 sort wosid patent
 keep wosid patent numauthors samename samenamevcpatent city state country wosorg author invnamegiven invnamesur
-merge m:1 wosid using $wosdir/wostitle, keep(1 3) nogen
+// merge m:1 wosid using $wosdir/wostitle, keep(1 3) nogen
 merge m:1 wosid using $wosdir/wosorg, keep(1 3) nogen
 merge m:1 wosid using $wosdir/wosacad, keep(1 3) nogen
-save data/paperpatcitenamematches, replace
+save paperpatcitenamematches, replace
 bys wosid patent: gen numsamename = sum(samename)
 bys wosid patent: gen numsamenamevcpatent = sum(samenamevcpatent)
 // gcollapse (first) numauthors (sum) samename samenamevcpatent, by(wosid patent)
@@ -192,12 +192,12 @@ STOPPY
 // gcollapse (sum) samename samenamevcpatent, by(wosid)
 // rename samename numpatcitenamematches
 // rename samenamevcpatent numvcpatcitenamematches
-// save data/numpatciteauthormatches, replace
+// save numpatciteauthormatches, replace
 
-use data/candidatetwinpaperdetails, clear
-merge 1:1 wosid using data/candidatetwincitedbyvcpatent, keep(1 3) nogen
+use candidatetwinpaperdetails, clear
+merge 1:1 wosid using candidatetwincitedbyvcpatent, keep(1 3) nogen
 replace citesfromvcbackedpatents = 0 if missing(citesfromvcbackedpatents)
-merge 1:1 wosid using data/numpatciteauthormatches, keep(1 3) nogen
+merge 1:1 wosid using numpatciteauthormatches, keep(1 3) nogen
 replace numpatcitenamematches = 0 if missing(numpatcitenamematches)
 replace numvcpatcitenamematches = 0 if missing(numvcpatcitenamematches)
 merge 1:1 wosid using $wosdir/wosacad, keep(1 3) nogen
@@ -208,7 +208,7 @@ merge 1:1 wosid using $wosdir/wosgovbacked, keep(1 3) nogen
 merge 1:1 wosid using $wosdir/wosappliedness, keep(1 3) nogen keepusing(wosmeshmagpatcites5yr)
 
 * can we get # of authors?
-save data/candidatetwinpaperdetails-extended, replace
+save candidatetwinpaperdetails-extended, replace
 
  
  
@@ -233,9 +233,9 @@ drop nnotcitingjointly ncitingpapers
 drop if njointcitingpapers==0
 * now we have the twin pair info. now merge in the papers
 ** first the paper IDS
-merge 1:m pairid using data/candidatetwinpairs, keep(3) nogen
+merge 1:m pairid using candidatetwinpairs, keep(3) nogen
 ** now the paper details
-merge m:1 wosid using data/candidatetwinpaperdetails-extended, keep(3) nogen
+merge m:1 wosid using candidatetwinpaperdetails-extended, keep(3) nogen
 gen anypatcitenamematches = numpatcitenamematches>0
 gen lnumpatcitenamematches = log(1+numpatcitenamematches)
 gen anyvcpatcitenamematches = numvcpatcitenamematches>0
@@ -245,9 +245,9 @@ merge m:1 wosid using $wosdir/wosacad, keep(1 3) nogen
 keep if paperacad==1
 bys pairid: gen ntwinpapers = _N
 drop if ntwinpapers==1
-save data/gscholtwinsregready, replace
+save gscholtwinsregready, replace
 /*
-use data/gscholtwinsregready, clear
+use gscholtwinsregready, clear
 
 unique pairid
 unique wosid
